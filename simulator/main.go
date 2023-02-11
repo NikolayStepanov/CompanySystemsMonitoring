@@ -40,6 +40,7 @@ const emailFilename = "email.data"
 const billingFilename = "billing.data"
 const supportApiUrl = "http://localhost:8282/support"
 const accendentListFilename = "accendents.data"
+const data = "data/"
 
 var firstSMSRowForCorrupt int
 var secondSMSRowForCorrupt int
@@ -391,7 +392,7 @@ func getRandomSupportTickets() int {
 }
 
 func getFilapathByFilename(filename string) string {
-	return "" + filename
+	return data + filename
 }
 
 func getRandomBandwidthInString() string {

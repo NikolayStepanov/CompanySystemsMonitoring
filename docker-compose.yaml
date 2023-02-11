@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  simulator:
+    container_name: simulator
+    restart: always
+    build: ./simulator
+    ports:
+      - "8383:8383"
+    volumes:
+      - simulator-data:/simulator/data
+  monitoring:
+    container_name: monitoring
+    #restart: always
+    build: ./
+    ports:
+      - "8080:8080"
+    depends_on:
+      - simulator
+    volumes:
+      - type: volume
+        source: simulator-data
+        target: /app/data
+volumes:
+  simulator-data:
