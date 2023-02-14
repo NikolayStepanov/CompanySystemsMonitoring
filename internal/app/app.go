@@ -25,5 +25,6 @@ func Run() {
 	filesStorage.LoadingCountries()
 	services := service.NewServices(&countryAlphaStorage)
 	log.Println(services.SMS.GetResultSMSData("data/sms.data"))
+	log.Println(services.MMS.GetResultMMSData())
 	time.Sleep(time.Minute * 20)
 }

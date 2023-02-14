@@ -19,8 +19,6 @@ const bandwidthColumn = 1
 const responseTimeColumn = 2
 const providerColumn = 3
 
-var ProvidersMap = map[string]string{"Topolo": "Topolo", "Rond": "Rond", "Kildy": "Kildy"}
-
 type SMSService struct {
 	CountriesAlphaStorage storages.CountriesAlphaStorager
 }
@@ -72,8 +70,8 @@ func (S SMSService) checkSMS(valueLine []string) bool {
 			if _, err = strconv.Atoi(valueLine[responseTimeColumn]); err != nil {
 				log.Printf("Value responseTime %v not valid. Error:%s", valueLine, err.Error())
 			} else {
-				if valueLine[providerColumn] != ProvidersMap[valueLine[providerColumn]] {
-					err = fmt.Errorf("provider= %s is absent", valueLine[providerColumn])
+				if valueLine[providerColumn] != common.ProvidersMap[valueLine[providerColumn]] {
+					err = fmt.Errorf("provider=%s is absent", valueLine[providerColumn])
 					log.Printf("Value provider %v not valid. Error:%s", valueLine, err.Error())
 					resultValid = false
 				}

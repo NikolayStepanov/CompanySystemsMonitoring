@@ -11,12 +11,19 @@ type SMS interface {
 	GetResultSMSData(path string) []domain.SMSData
 }
 
+type MMS interface {
+	mmsRequest() []domain.MMSData
+	checkMMS(value domain.MMSData) bool
+	GetResultMMSData() []domain.MMSData
+}
+
 type Services struct {
 	SMS SMS
+	MMS MMS
 }
 
 func NewServices(countriesAlphaStorage storages.CountriesAlphaStorager) *Services {
 	smsService := NewSMSService(countriesAlphaStorage)
-
-	return &Services{smsService}
+	mmsService := NewMMSService(countriesAlphaStorage)
+	return &Services{smsService, mmsService}
 }
