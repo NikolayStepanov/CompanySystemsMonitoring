@@ -1,4 +1,4 @@
 package common
 
-const minBandwidth = 0
-const maxBandwidth = 100
+const MinBandwidth = 0
+const MaxBandwidth = 100

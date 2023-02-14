@@ -9,10 +9,16 @@ type CSVFile struct {
 	NameFile string
 }
 
+type CSVFiler interface {
+	WriteAll(records [][]string) error
+	ReadAll() ([][]string, error)
+}
+
 func NewCSVFile(nameFile string) *CSVFile {
 	return &CSVFile{NameFile: nameFile}
 }
 
+// WriteAll записать в CSV файл
 func (C *CSVFile) WriteAll(records [][]string) error {
 	err := error(nil)
 	file := new(os.File)
@@ -35,6 +41,7 @@ func (C *CSVFile) WriteAll(records [][]string) error {
 	return err
 }
 
+// ReadAll прочитать CSV файл
 func (C *CSVFile) ReadAll() ([][]string, error) {
 	var records [][]string
 	err := error(nil)

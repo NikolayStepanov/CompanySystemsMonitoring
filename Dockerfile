@@ -8,6 +8,6 @@ RUN go mod download
 
 COPY . .
 
-RUN GOOS=linux go build -o ./app/monitoring ./cmd/app/main.go
+RUN GOOS=linux go build -o ./app ./cmd/app/main.go
 
-CMD ["./app/monitoring"]
+CMD ["./app"]
