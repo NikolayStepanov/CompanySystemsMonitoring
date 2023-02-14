@@ -465,7 +465,7 @@ func response(w http.ResponseWriter, r *http.Request, responseStruct interface{}
 var testBodyResponse = []byte(`
 {
     "status": true,
-    "data_app": {
+    "data": {
       "sms": [
         [
           {
