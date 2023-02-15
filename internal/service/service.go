@@ -23,15 +23,23 @@ type VoiceCall interface {
 	GetResultVoiceCallData(path string) []domain.VoiceCallData
 }
 
+type Email interface {
+	emailRead(path string) []domain.EmailData
+	checkEmail(value []string) bool
+	GetResultEmailData(path string) []domain.EmailData
+}
+
 type Services struct {
 	SMS       SMS
 	MMS       MMS
 	VoiceCall VoiceCall
+	Email     Email
 }
 
 func NewServices(countriesAlphaStorage storages.CountriesAlphaStorager) *Services {
 	smsService := NewSMSService(countriesAlphaStorage)
 	mmsService := NewMMSService(countriesAlphaStorage)
 	voiceCall := NewVoiceCallService(countriesAlphaStorage)
-	return &Services{smsService, mmsService, voiceCall}
+	email := NewEmailService(countriesAlphaStorage)
+	return &Services{smsService, mmsService, voiceCall, email}
 }

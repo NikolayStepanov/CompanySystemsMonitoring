@@ -62,7 +62,7 @@ func (M MMSService) checkMMS(value domain.MMSData) bool {
 				log.Printf("Value responseTime %v not valid. Error:%s", value, err.Error())
 			} else {
 				if value.Provider != common.ProvidersMap[value.Provider] {
-					err = fmt.Errorf("provider=%s is absent", value.Provider)
+					err = fmt.Errorf("not found provider=%s", value.Provider)
 					log.Printf("Value provider %v not valid. Error:%s", value, err.Error())
 					resultValid = false
 				}

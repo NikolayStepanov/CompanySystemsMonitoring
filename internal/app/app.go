@@ -30,5 +30,7 @@ func Run() {
 	log.Println(services.MMS.GetResultMMSData())
 	log.Println("VoiceCall Service:")
 	log.Println(services.VoiceCall.GetResultVoiceCallData("simulator/data/voice.data"))
+	log.Println("Email Service:")
+	log.Println(services.Email.GetResultEmailData("simulator/data/email.data"))
 	time.Sleep(time.Minute * 20)
 }

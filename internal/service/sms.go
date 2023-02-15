@@ -67,7 +67,7 @@ func (S SMSService) checkSMS(valueLine []string) bool {
 				log.Printf("Value responseTime %v not valid. Error:%s", valueLine, err.Error())
 			} else {
 				if valueLine[ProviderColumn] != ProvidersMap[valueLine[ProviderColumn]] {
-					err = fmt.Errorf("provider=%s is absent", valueLine[ProviderColumn])
+					err = fmt.Errorf("not found provider=%s", valueLine[ProviderColumn])
 					log.Printf("Value provider %v not valid. Error:%s", valueLine, err.Error())
 					resultValid = false
 				}

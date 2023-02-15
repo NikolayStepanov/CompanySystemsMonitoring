@@ -75,8 +75,8 @@ func (v VoiceCallService) checkVoiceCall(valueLine []string) bool {
 			if _, err = strconv.Atoi(valueLine[ResponseTimeColumn]); err != nil {
 				log.Printf("Value responseTime %v not valid. Error:%s", valueLine, err.Error())
 			} else {
-				if valueLine[ProviderColumn] != VoiceProviderMap[valueLine[ProviderColumn]] {
-					err = fmt.Errorf("provider=%s is absent", valueLine[ProviderColumn])
+				if valueLine[ProviderColumn] != VoiceProvidersMap[valueLine[ProviderColumn]] {
+					err = fmt.Errorf("not found provider=%s", valueLine[ProviderColumn])
 					log.Printf("Value provider %v not valid. Error:%s", valueLine, err.Error())
 					resultValid = false
 				} else if _, err = strconv.ParseFloat(valueLine[ConnectionStabilityColumn], 32); err != nil {
