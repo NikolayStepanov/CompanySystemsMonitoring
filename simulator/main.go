@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -435,7 +436,9 @@ func listenAndServeHTTP() {
 	router.HandleFunc("/accendent", handleAccendent)
 	router.HandleFunc("/test", handleTest).Methods("GET", "OPTIONS")
 
-	http.ListenAndServe("172.16.238.10:8383", router)
+	if err := http.ListenAndServe("172.16.238.10:8383", router); err != nil {
+		log.Println(err)
+	}
 }
 
 func handleMMS(w http.ResponseWriter, r *http.Request) {

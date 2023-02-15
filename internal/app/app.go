@@ -24,7 +24,11 @@ func Run() {
 	filesStorage := files_storage.NewFileStorage(&countryAlphaStorage, alphaCSV)
 	filesStorage.LoadingCountries()
 	services := service.NewServices(&countryAlphaStorage)
-	log.Println(services.SMS.GetResultSMSData("data/sms.data"))
+	log.Println("SMS Service:")
+	log.Println(services.SMS.GetResultSMSData("simulator/data/sms.data"))
+	log.Println("MMS Service:")
 	log.Println(services.MMS.GetResultMMSData())
+	log.Println("VoiceCall Service:")
+	log.Println(services.VoiceCall.GetResultVoiceCallData("simulator/data/voice.data"))
 	time.Sleep(time.Minute * 20)
 }
