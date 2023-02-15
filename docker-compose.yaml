@@ -25,7 +25,7 @@ services:
     volumes:
       - type: volume
         source: simulator-data
-        target: /app/data
+        target: /app/simulator/data
 volumes:
   simulator-data:
 networks:

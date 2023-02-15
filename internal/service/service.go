@@ -17,13 +17,21 @@ type MMS interface {
 	GetResultMMSData() []domain.MMSData
 }
 
+type VoiceCall interface {
+	voiceCallRead(path string) []domain.VoiceCallData
+	checkVoiceCall(value []string) bool
+	GetResultVoiceCallData(path string) []domain.VoiceCallData
+}
+
 type Services struct {
-	SMS SMS
-	MMS MMS
+	SMS       SMS
+	MMS       MMS
+	VoiceCall VoiceCall
 }
 
 func NewServices(countriesAlphaStorage storages.CountriesAlphaStorager) *Services {
 	smsService := NewSMSService(countriesAlphaStorage)
 	mmsService := NewMMSService(countriesAlphaStorage)
-	return &Services{smsService, mmsService}
+	voiceCall := NewVoiceCallService(countriesAlphaStorage)
+	return &Services{smsService, mmsService, voiceCall}
 }

@@ -72,6 +72,10 @@ func (M MMSService) checkMMS(value domain.MMSData) bool {
 			log.Printf("Value percent bandwidth %v not valid. Error:%s", value, err.Error())
 			resultValid = false
 		}
+	} else {
+		err = fmt.Errorf("no such code alpha-2 in countries storage")
+		log.Printf("Value alpha-2 %v not valid. Error:%s", value, err.Error())
+		resultValid = false
 	}
 	return resultValid
 }

@@ -2,7 +2,7 @@ package service
 
 import (
 	"CompanySystemsMonitoring/internal/domain"
-	"CompanySystemsMonitoring/internal/domain/common"
+	. "CompanySystemsMonitoring/internal/domain/common"
 	"CompanySystemsMonitoring/internal/repository/storages"
 	"fmt"
 	"io/ioutil"
@@ -13,11 +13,7 @@ import (
 	"strings"
 )
 
-const countFields = 4
-const alphaColumn = 0
-const bandwidthColumn = 1
-const responseTimeColumn = 2
-const providerColumn = 3
+const CountFieldsSMS = 4
 
 type SMSService struct {
 	CountriesAlphaStorage storages.CountriesAlphaStorager
@@ -29,7 +25,7 @@ func NewSMSService(countriesAlphaStorage storages.CountriesAlphaStorager) *SMSSe
 
 // smsRead read sms data
 func (S SMSService) smsRead(path string) []domain.SMSData {
-	var smsDataResult []domain.SMSData
+	smsDataResult := []domain.SMSData{}
 	file, err := os.Open(path)
 	if err != nil {
 		log.Println("Cannot open smsData file:", err)
@@ -42,13 +38,13 @@ func (S SMSService) smsRead(path string) []domain.SMSData {
 	lines := strings.Split(string(reader), "\n")
 	for _, line := range lines {
 		lineSplit := strings.Split(line, ";")
-		if len(lineSplit) == countFields {
+		if len(lineSplit) == CountFieldsSMS {
 			if S.checkSMS(lineSplit) {
 				smsData := domain.SMSData{
-					Country:      S.CountriesAlphaStorage.GetNameCountryFromAlpha(lineSplit[alphaColumn]),
-					Bandwidth:    lineSplit[bandwidthColumn],
-					ResponseTime: lineSplit[responseTimeColumn],
-					Provider:     lineSplit[providerColumn],
+					Country:      S.CountriesAlphaStorage.GetNameCountryFromAlpha(lineSplit[AlphaColumn]),
+					Bandwidth:    lineSplit[BandwidthColumn],
+					ResponseTime: lineSplit[ResponseTimeColumn],
+					Provider:     lineSplit[ProviderColumn],
 				}
 				smsDataResult = append(smsDataResult, smsData)
 			}
@@ -61,17 +57,17 @@ func (S SMSService) smsRead(path string) []domain.SMSData {
 func (S SMSService) checkSMS(valueLine []string) bool {
 	err := error(nil)
 	resultValid := true
-	if S.CountriesAlphaStorage.ContainsAlpha(valueLine[alphaColumn]) {
+	if S.CountriesAlphaStorage.ContainsAlpha(valueLine[AlphaColumn]) {
 		percentBandwidth := 0
-		if percentBandwidth, err = strconv.Atoi(valueLine[bandwidthColumn]); err != nil {
+		if percentBandwidth, err = strconv.Atoi(valueLine[BandwidthColumn]); err != nil {
 			log.Printf("Value percent bandwidth %v not valid. Error:%s", valueLine, err.Error())
 			resultValid = false
-		} else if common.MinBandwidth <= percentBandwidth && percentBandwidth <= common.MaxBandwidth {
-			if _, err = strconv.Atoi(valueLine[responseTimeColumn]); err != nil {
+		} else if MinBandwidth <= percentBandwidth && percentBandwidth <= MaxBandwidth {
+			if _, err = strconv.Atoi(valueLine[ResponseTimeColumn]); err != nil {
 				log.Printf("Value responseTime %v not valid. Error:%s", valueLine, err.Error())
 			} else {
-				if valueLine[providerColumn] != common.ProvidersMap[valueLine[providerColumn]] {
-					err = fmt.Errorf("provider=%s is absent", valueLine[providerColumn])
+				if valueLine[ProviderColumn] != ProvidersMap[valueLine[ProviderColumn]] {
+					err = fmt.Errorf("provider=%s is absent", valueLine[ProviderColumn])
 					log.Printf("Value provider %v not valid. Error:%s", valueLine, err.Error())
 					resultValid = false
 				}
@@ -81,6 +77,10 @@ func (S SMSService) checkSMS(valueLine []string) bool {
 			log.Printf("Value percent bandwidth %v not valid. Error:%s", valueLine, err.Error())
 			resultValid = false
 		}
+	} else {
+		err = fmt.Errorf("no such code alpha-2 in countries storage")
+		log.Printf("Value alpha-2 %v not valid. Error:%s", valueLine, err.Error())
+		resultValid = false
 	}
 	return resultValid
 }
