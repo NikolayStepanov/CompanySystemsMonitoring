@@ -17,6 +17,10 @@ type MMSService struct {
 	CountriesAlphaStorage storages.CountriesAlphaStorager
 }
 
+func NewMMSService(countriesAlphaStorage storages.CountriesAlphaStorager) *MMSService {
+	return &MMSService{CountriesAlphaStorage: countriesAlphaStorage}
+}
+
 // mmsRequest request for mms data
 func (M MMSService) mmsRequest() []domain.MMSData {
 	err := error(nil)
@@ -62,7 +66,7 @@ func (M MMSService) checkMMS(value domain.MMSData) bool {
 				log.Printf("Value responseTime %v not valid. Error:%s", value, err.Error())
 			} else {
 				if value.Provider != common.ProvidersMap[value.Provider] {
-					err = fmt.Errorf("provider=%s is absent", value.Provider)
+					err = fmt.Errorf("not found provider=%s", value.Provider)
 					log.Printf("Value provider %v not valid. Error:%s", value, err.Error())
 					resultValid = false
 				}
@@ -87,8 +91,4 @@ func (M MMSService) GetResultMMSData() []domain.MMSData {
 		return resultSMSData[i].Country < resultSMSData[j].Country
 	})
 	return resultSMSData
-}
-
-func NewMMSService(countriesAlphaStorage storages.CountriesAlphaStorager) *MMSService {
-	return &MMSService{CountriesAlphaStorage: countriesAlphaStorage}
 }

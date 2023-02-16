@@ -23,6 +23,10 @@ type VoiceCallService struct {
 	CountriesAlphaStorage storages.CountriesAlphaStorager
 }
 
+func NewVoiceCallService(countriesAlphaStorage storages.CountriesAlphaStorager) *VoiceCallService {
+	return &VoiceCallService{CountriesAlphaStorage: countriesAlphaStorage}
+}
+
 // voiceCallRead read voiceCall data
 func (v VoiceCallService) voiceCallRead(path string) []domain.VoiceCallData {
 	voiceCallDataResult := []domain.VoiceCallData{}
@@ -75,8 +79,8 @@ func (v VoiceCallService) checkVoiceCall(valueLine []string) bool {
 			if _, err = strconv.Atoi(valueLine[ResponseTimeColumn]); err != nil {
 				log.Printf("Value responseTime %v not valid. Error:%s", valueLine, err.Error())
 			} else {
-				if valueLine[ProviderColumn] != VoiceProviderMap[valueLine[ProviderColumn]] {
-					err = fmt.Errorf("provider=%s is absent", valueLine[ProviderColumn])
+				if valueLine[ProviderColumn] != VoiceProvidersMap[valueLine[ProviderColumn]] {
+					err = fmt.Errorf("not found provider=%s", valueLine[ProviderColumn])
 					log.Printf("Value provider %v not valid. Error:%s", valueLine, err.Error())
 					resultValid = false
 				} else if _, err = strconv.ParseFloat(valueLine[ConnectionStabilityColumn], 32); err != nil {
@@ -113,8 +117,4 @@ func (v VoiceCallService) GetResultVoiceCallData(path string) []domain.VoiceCall
 		return resultVoiceCallData[i].Country < resultVoiceCallData[j].Country
 	})
 	return resultVoiceCallData
-}
-
-func NewVoiceCallService(countriesAlphaStorage storages.CountriesAlphaStorager) *VoiceCallService {
-	return &VoiceCallService{CountriesAlphaStorage: countriesAlphaStorage}
 }
