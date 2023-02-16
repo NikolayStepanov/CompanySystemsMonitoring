@@ -43,7 +43,7 @@ func (C *CSVFile) WriteAll(records [][]string) error {
 
 // ReadAll read CSV file
 func (C *CSVFile) ReadAll() ([][]string, error) {
-	var records [][]string
+	records := [][]string{}
 	err := error(nil)
 	file := new(os.File)
 

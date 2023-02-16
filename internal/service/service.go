@@ -29,11 +29,16 @@ type Email interface {
 	GetResultEmailData(path string) []domain.EmailData
 }
 
+type Billing interface {
+	BillingRead(path string) domain.BillingData
+}
+
 type Services struct {
 	SMS       SMS
 	MMS       MMS
 	VoiceCall VoiceCall
 	Email     Email
+	Billing   Billing
 }
 
 func NewServices(countriesAlphaStorage storages.CountriesAlphaStorager) *Services {
@@ -41,5 +46,6 @@ func NewServices(countriesAlphaStorage storages.CountriesAlphaStorager) *Service
 	mmsService := NewMMSService(countriesAlphaStorage)
 	voiceCall := NewVoiceCallService(countriesAlphaStorage)
 	email := NewEmailService(countriesAlphaStorage)
-	return &Services{smsService, mmsService, voiceCall, email}
+	billing := NewBillingService()
+	return &Services{smsService, mmsService, voiceCall, email, billing}
 }
