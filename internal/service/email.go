@@ -21,17 +21,21 @@ type EmailService struct {
 	CountriesAlphaStorage storages.CountriesAlphaStorager
 }
 
+func NewEmailService(countriesAlphaStorage storages.CountriesAlphaStorager) *EmailService {
+	return &EmailService{CountriesAlphaStorage: countriesAlphaStorage}
+}
+
 // emailRead read email data
 func (e EmailService) emailRead(path string) []domain.EmailData {
 	emailDataResult := []domain.EmailData{}
 	file, err := os.Open(path)
 	if err != nil {
-		log.Println("Cannot open smsData file:", err)
+		log.Println("Cannot open emailData file:", err)
 	}
 	defer file.Close()
 	reader, err := ioutil.ReadAll(file)
 	if err != nil {
-		log.Fatal("Cannot read smsData file:", err)
+		log.Fatal("Cannot read emailData file:", err)
 	}
 	lines := strings.Split(string(reader), "\n")
 	for _, line := range lines {
@@ -79,8 +83,4 @@ func (e EmailService) GetResultEmailData(path string) []domain.EmailData {
 		return resultEmailData[i].Country < resultEmailData[j].Country
 	})
 	return resultEmailData
-}
-
-func NewEmailService(countriesAlphaStorage storages.CountriesAlphaStorager) *EmailService {
-	return &EmailService{CountriesAlphaStorage: countriesAlphaStorage}
 }

@@ -17,6 +17,10 @@ type MMSService struct {
 	CountriesAlphaStorage storages.CountriesAlphaStorager
 }
 
+func NewMMSService(countriesAlphaStorage storages.CountriesAlphaStorager) *MMSService {
+	return &MMSService{CountriesAlphaStorage: countriesAlphaStorage}
+}
+
 // mmsRequest request for mms data
 func (M MMSService) mmsRequest() []domain.MMSData {
 	err := error(nil)
@@ -87,8 +91,4 @@ func (M MMSService) GetResultMMSData() []domain.MMSData {
 		return resultSMSData[i].Country < resultSMSData[j].Country
 	})
 	return resultSMSData
-}
-
-func NewMMSService(countriesAlphaStorage storages.CountriesAlphaStorager) *MMSService {
-	return &MMSService{CountriesAlphaStorage: countriesAlphaStorage}
 }

@@ -23,6 +23,10 @@ type VoiceCallService struct {
 	CountriesAlphaStorage storages.CountriesAlphaStorager
 }
 
+func NewVoiceCallService(countriesAlphaStorage storages.CountriesAlphaStorager) *VoiceCallService {
+	return &VoiceCallService{CountriesAlphaStorage: countriesAlphaStorage}
+}
+
 // voiceCallRead read voiceCall data
 func (v VoiceCallService) voiceCallRead(path string) []domain.VoiceCallData {
 	voiceCallDataResult := []domain.VoiceCallData{}
@@ -113,8 +117,4 @@ func (v VoiceCallService) GetResultVoiceCallData(path string) []domain.VoiceCall
 		return resultVoiceCallData[i].Country < resultVoiceCallData[j].Country
 	})
 	return resultVoiceCallData
-}
-
-func NewVoiceCallService(countriesAlphaStorage storages.CountriesAlphaStorager) *VoiceCallService {
-	return &VoiceCallService{CountriesAlphaStorage: countriesAlphaStorage}
 }
