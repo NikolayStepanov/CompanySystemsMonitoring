@@ -34,5 +34,7 @@ func Run() {
 	log.Println(services.Email.GetResultEmailData("simulator/data/email.data"))
 	log.Println("Billing Service:")
 	log.Println(services.Billing.BillingRead("simulator/data/billing.data"))
+	log.Println("Support Service:")
+	log.Println(services.Support.GetResultSupportData())
 	time.Sleep(time.Minute * 20)
 }
