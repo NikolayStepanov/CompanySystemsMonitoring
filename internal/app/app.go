@@ -1,24 +1,25 @@
 package app
 
 import (
+	httpDelivery "CompanySystemsMonitoring/internal/delivery/http"
 	"CompanySystemsMonitoring/internal/repository/files_storage"
 	"CompanySystemsMonitoring/internal/repository/files_storage/csv_file"
 	"CompanySystemsMonitoring/internal/repository/storages"
+	"CompanySystemsMonitoring/internal/server"
 	"CompanySystemsMonitoring/internal/service"
-	"fmt"
+	"context"
 	"log"
-	"os"
-	"time"
+	"os/signal"
+	"sync"
+	"syscall"
 )
 
 func Run() {
+	err := error(nil)
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	defer cancel()
+
 	log.Println("run")
-	pwd, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	fmt.Println(pwd)
 	alphaCSV := csv_file.NewCSVFile("data_app/alpha-2.csv")
 	countryAlphaStorage := storages.CountriesAlphaStorage{}
 	filesStorage := files_storage.NewFileStorage(&countryAlphaStorage, alphaCSV)
@@ -38,5 +39,26 @@ func Run() {
 	log.Println(services.Support.GetResultSupportData())
 	log.Println("Incident Service:")
 	log.Println(services.Incident.GetResultIncidentData())
-	time.Sleep(time.Minute * 20)
+
+	handlers := httpDelivery.NewHandler()
+	//HTTP Server
+	srv := server.NewServer(handlers.Init())
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if err = srv.Run(); err != nil {
+			log.Printf("error occurred while running http server: %s\n", err.Error())
+		}
+	}()
+	log.Print("Server started")
+	<-ctx.Done()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if err = srv.Stop(context.Background()); err != nil {
+			log.Printf("error occured on server shutting down: %s", err.Error())
+		}
+	}()
+	wg.Wait()
 }
