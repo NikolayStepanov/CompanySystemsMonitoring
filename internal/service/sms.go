@@ -85,7 +85,7 @@ func (S SMSService) checkSMS(valueLine []string) bool {
 	return resultValid
 }
 
-// GetResultSMSData get result sms systems
+// GetResultSMSData get result sms data systems
 func (S SMSService) GetResultSMSData(path string) []domain.SMSData {
 	resultSMSData := S.smsRead(path)
 	sort.Slice(resultSMSData, func(i, j int) bool {

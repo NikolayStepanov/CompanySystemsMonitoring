@@ -84,7 +84,7 @@ func (M MMSService) checkMMS(value domain.MMSData) bool {
 	return resultValid
 }
 
-// GetResultMMSData get result mms systems
+// GetResultMMSData get result mms data systems
 func (M MMSService) GetResultMMSData() []domain.MMSData {
 	resultSMSData := M.mmsRequest()
 	sort.Slice(resultSMSData, func(i, j int) bool {

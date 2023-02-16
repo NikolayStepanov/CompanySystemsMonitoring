@@ -76,7 +76,7 @@ func (e EmailService) checkEmail(value []string) bool {
 	return resultValid
 }
 
-// GetResultEmailData get result email systems
+// GetResultEmailData get result email data systems
 func (e EmailService) GetResultEmailData(path string) []domain.EmailData {
 	resultEmailData := e.emailRead(path)
 	sort.Slice(resultEmailData, func(i, j int) bool {

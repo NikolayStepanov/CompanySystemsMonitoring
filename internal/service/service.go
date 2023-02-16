@@ -33,12 +33,18 @@ type Billing interface {
 	BillingRead(path string) domain.BillingData
 }
 
+type Support interface {
+	supportRequest() []domain.SupportData
+	GetResultSupportData() []domain.SupportData
+}
+
 type Services struct {
 	SMS       SMS
 	MMS       MMS
 	VoiceCall VoiceCall
 	Email     Email
 	Billing   Billing
+	Support   Support
 }
 
 func NewServices(countriesAlphaStorage storages.CountriesAlphaStorager) *Services {
@@ -47,5 +53,6 @@ func NewServices(countriesAlphaStorage storages.CountriesAlphaStorager) *Service
 	voiceCall := NewVoiceCallService(countriesAlphaStorage)
 	email := NewEmailService(countriesAlphaStorage)
 	billing := NewBillingService()
-	return &Services{smsService, mmsService, voiceCall, email, billing}
+	support := NewSupportService()
+	return &Services{smsService, mmsService, voiceCall, email, billing, support}
 }
