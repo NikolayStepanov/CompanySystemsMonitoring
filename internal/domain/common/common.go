@@ -12,7 +12,9 @@ var EmailProvidersMap = map[string]string{"Gmail": "Gmail", "Yahoo": "Yahoo", "H
 const UrlApi = "http://172.16.238.10:8383"
 const UrlMMSSystem = UrlApi + "/mms"
 
-const AlphaColumn = 0
-const BandwidthColumn = 1
-const ResponseTimeColumn = 2
-const ProviderColumn = 3
+const (
+	AlphaColumn = iota
+	BandwidthColumn
+	ResponseTimeColumn
+	ProviderColumn
+)
