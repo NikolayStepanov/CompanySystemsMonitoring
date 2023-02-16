@@ -18,8 +18,8 @@ func NewFileStorage(storage *storages.CountriesAlphaStorage, csvFile csv_file.CS
 // LoadingCountries load alpha-2 codes from file into storage
 func (C *FilesStorage) LoadingCountries() error {
 	err := error(nil)
-	var countriesRows [][]string
-	var countriesMap map[string]string
+	countriesRows := [][]string{}
+	countriesMap := map[string]string{}
 	if countriesRows, err = C.CountriesCSV.ReadAll(); err != nil {
 		log.Println(err)
 	} else {
