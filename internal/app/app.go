@@ -36,5 +36,7 @@ func Run() {
 	log.Println(services.Billing.BillingRead("simulator/data/billing.data"))
 	log.Println("Support Service:")
 	log.Println(services.Support.GetResultSupportData())
+	log.Println("Incident Service:")
+	log.Println(services.Incident.GetResultIncidentData())
 	time.Sleep(time.Minute * 20)
 }

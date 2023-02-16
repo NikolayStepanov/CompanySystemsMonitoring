@@ -9,11 +9,12 @@ var (
 )
 
 const (
-	MinBandwidth     = 0
-	MaxBandwidth     = 100
-	UrlApi           = "http://172.16.238.10:8383"
-	UrlMMSSystem     = UrlApi + "/mms"
-	UrlSupportSystem = UrlApi + "/support"
+	MinBandwidth      = 0
+	MaxBandwidth      = 100
+	UrlApi            = "http://172.16.238.10:8383"
+	UrlMMSSystem      = UrlApi + "/mms"
+	UrlSupportSystem  = UrlApi + "/support"
+	UrlIncidentSystem = UrlApi + "/accendent"
 )
 
 const (

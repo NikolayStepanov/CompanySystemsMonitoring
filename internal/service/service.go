@@ -38,6 +38,11 @@ type Support interface {
 	GetResultSupportData() []domain.SupportData
 }
 
+type Incident interface {
+	incidentRequest() []domain.IncidentData
+	GetResultIncidentData() []domain.IncidentData
+}
+
 type Services struct {
 	SMS       SMS
 	MMS       MMS
@@ -45,6 +50,7 @@ type Services struct {
 	Email     Email
 	Billing   Billing
 	Support   Support
+	Incident  Incident
 }
 
 func NewServices(countriesAlphaStorage storages.CountriesAlphaStorager) *Services {
@@ -54,5 +60,7 @@ func NewServices(countriesAlphaStorage storages.CountriesAlphaStorager) *Service
 	email := NewEmailService(countriesAlphaStorage)
 	billing := NewBillingService()
 	support := NewSupportService()
-	return &Services{smsService, mmsService, voiceCall, email, billing, support}
+	incident := NewIncidentService()
+	return &Services{smsService, mmsService, voiceCall, email, billing,
+		support, incident}
 }
