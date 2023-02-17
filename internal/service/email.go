@@ -14,8 +14,11 @@ import (
 )
 
 const CountFieldsEmail = 3
-const EmailProviderColumn = 1
-const EmailDeliveryTimeColumn = 2
+
+const (
+	EmailProviderColumn = 1 + iota
+	EmailDeliveryTimeColumn
+)
 
 type EmailService struct {
 	CountriesAlphaStorage storages.CountriesAlphaStorager

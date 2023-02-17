@@ -14,10 +14,13 @@ import (
 )
 
 const CountFieldsVoiceCall = 8
-const ConnectionStabilityColumn = 4
-const TTFBColumn = 5
-const VoicePurityColumn = 6
-const MedianOfCallsTimeColumn = 7
+
+const (
+	ConnectionStabilityColumn = 4 + iota
+	TTFBColumn
+	VoicePurityColumn
+	MedianOfCallsTimeColumn
+)
 
 type VoiceCallService struct {
 	CountriesAlphaStorage storages.CountriesAlphaStorager
