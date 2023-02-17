@@ -85,10 +85,16 @@ func (M MMSService) checkMMS(value domain.MMSData) bool {
 }
 
 // GetResultMMSData get result mms data systems
-func (M MMSService) GetResultMMSData() []domain.MMSData {
-	resultSMSData := M.mmsRequest()
-	sort.Slice(resultSMSData, func(i, j int) bool {
-		return resultSMSData[i].Country < resultSMSData[j].Country
-	})
-	return resultSMSData
+func (M MMSService) GetResultMMSData() [][]domain.MMSData {
+	resultMMSData := [][]domain.MMSData{}
+	mmsData := M.mmsRequest()
+	mmsDataSortedByProvider := make([]domain.MMSData, len(mmsData))
+	mmsDataSortedByCountry := make([]domain.MMSData, len(mmsData))
+	copy(mmsDataSortedByProvider, mmsData)
+	copy(mmsDataSortedByCountry, mmsData)
+	sort.Sort(domain.MMSByProvider{mmsDataSortedByProvider})
+	sort.Sort(domain.MMSByCountry{mmsDataSortedByCountry})
+	resultMMSData = append(resultMMSData, mmsDataSortedByProvider)
+	resultMMSData = append(resultMMSData, mmsDataSortedByCountry)
+	return resultMMSData
 }
