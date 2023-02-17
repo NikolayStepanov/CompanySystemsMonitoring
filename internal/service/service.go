@@ -42,7 +42,6 @@ type Incident interface {
 	incidentRequest() []domain.IncidentData
 	GetResultIncidentData() []domain.IncidentData
 }
-
 type Services struct {
 	SMS       SMS
 	MMS       MMS

@@ -39,7 +39,9 @@ func Run() {
 	log.Println(services.Support.GetResultSupportData())
 	log.Println("Incident Service:")
 	log.Println(services.Incident.GetResultIncidentData())
-
+	log.Println("Result Service:")
+	result := service.NewResultService(services)
+	log.Println(result.GetResultData())
 	handlers := httpDelivery.NewHandler()
 	//HTTP Server
 	srv := server.NewServer(handlers.Init())
