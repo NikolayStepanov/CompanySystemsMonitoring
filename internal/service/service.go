@@ -35,7 +35,7 @@ type Billing interface {
 
 type Support interface {
 	supportRequest() []domain.SupportData
-	GetResultSupportData() []domain.SupportData
+	GetResultSupportData() []int
 }
 
 type Incident interface {
