@@ -10,8 +10,10 @@ import (
 )
 
 const (
-	sixtyMinutes    = 60
-	speedTickitHour = 18
+	sixtyMinutes      = 60
+	speedTickitHour   = 18
+	notLoadBorder     = 9
+	averageLoadBorder = 16
 )
 
 const (
@@ -46,7 +48,7 @@ func (s SupportService) supportRequest() []domain.SupportData {
 
 // GetResultSupportData get result support data systems
 func (s SupportService) GetResultSupportData() []int {
-	result := make([]int, 2)
+	result := make([]int, 0)
 	totalTicket := 0
 	averageTime := 0
 	load := 0
@@ -54,9 +56,9 @@ func (s SupportService) GetResultSupportData() []int {
 	for _, value := range supportData {
 		totalTicket += value.ActiveTickets
 	}
-	if totalTicket < 9 {
+	if totalTicket < notLoadBorder {
 		load = notLoad
-	} else if totalTicket <= 16 {
+	} else if totalTicket <= averageLoadBorder {
 		load = averageLoad
 	} else {
 		load = overLoad

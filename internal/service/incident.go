@@ -7,9 +7,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sort"
 )
 
 type IncidentService struct {
+}
+
+func NewIncidentService() *IncidentService {
+	return &IncidentService{}
 }
 
 // incidentRequest request for incident data
@@ -36,9 +41,6 @@ func (i IncidentService) incidentRequest() []domain.IncidentData {
 // GetResultIncidentData get result incident data systems
 func (i IncidentService) GetResultIncidentData() []domain.IncidentData {
 	resultIncidentData := i.incidentRequest()
+	sort.Sort(domain.IncidentByStatus{resultIncidentData})
 	return resultIncidentData
-}
-
-func NewIncidentService() *IncidentService {
-	return &IncidentService{}
 }
