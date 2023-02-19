@@ -9,6 +9,19 @@ import (
 	"net/http"
 )
 
+const (
+	sixtyMinutes      = 60
+	speedTickitHour   = 18
+	notLoadBorder     = 9
+	averageLoadBorder = 16
+)
+
+const (
+	notLoad = iota + 1
+	averageLoad
+	overLoad
+)
+
 type SupportService struct {
 }
 
@@ -34,9 +47,27 @@ func (s SupportService) supportRequest() []domain.SupportData {
 }
 
 // GetResultSupportData get result support data systems
-func (s SupportService) GetResultSupportData() []domain.SupportData {
-	resultSupportData := s.supportRequest()
-	return resultSupportData
+func (s SupportService) GetResultSupportData() []int {
+	result := make([]int, 0)
+	totalTicket := 0
+	averageTime := 0
+	load := 0
+	supportData := s.supportRequest()
+	for _, value := range supportData {
+		totalTicket += value.ActiveTickets
+	}
+	if totalTicket < notLoadBorder {
+		load = notLoad
+	} else if totalTicket <= averageLoadBorder {
+		load = averageLoad
+	} else {
+		load = overLoad
+	}
+	timeToRequest := float64(sixtyMinutes) / float64(speedTickitHour)
+	averageTime = int(float64(totalTicket) * timeToRequest)
+	result = append(result, load)
+	result = append(result, averageTime)
+	return result
 }
 
 func NewSupportService() *SupportService {

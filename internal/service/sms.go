@@ -86,10 +86,16 @@ func (S SMSService) checkSMS(valueLine []string) bool {
 }
 
 // GetResultSMSData get result sms data systems
-func (S SMSService) GetResultSMSData(path string) []domain.SMSData {
-	resultSMSData := S.smsRead(path)
-	sort.Slice(resultSMSData, func(i, j int) bool {
-		return resultSMSData[i].Country < resultSMSData[j].Country
-	})
+func (S SMSService) GetResultSMSData(path string) [][]domain.SMSData {
+	resultSMSData := [][]domain.SMSData{}
+	smsData := S.smsRead(path)
+	smsDataSortedByProvider := make([]domain.SMSData, len(smsData))
+	smsDataSortedByCountry := make([]domain.SMSData, len(smsData))
+	copy(smsDataSortedByProvider, smsData)
+	copy(smsDataSortedByCountry, smsData)
+	sort.Sort(domain.SMSByProvider{smsDataSortedByProvider})
+	sort.Sort(domain.SMSByCountry{smsDataSortedByCountry})
+	resultSMSData = append(resultSMSData, smsDataSortedByProvider)
+	resultSMSData = append(resultSMSData, smsDataSortedByCountry)
 	return resultSMSData
 }

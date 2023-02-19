@@ -6,6 +6,11 @@ import (
 	"log"
 )
 
+const (
+	NameCountryColumn = iota
+	AlphaCountryColumn
+)
+
 type FilesStorage struct {
 	CountriesAlphaStorage *storages.CountriesAlphaStorage
 	CountriesCSV          csv_file.CSVFiler
@@ -25,7 +30,7 @@ func (C *FilesStorage) LoadingCountries() error {
 	} else {
 		countriesMap = make(map[string]string, len(countriesRows))
 		for _, countryRow := range countriesRows {
-			countriesMap[countryRow[1]] = countryRow[0]
+			countriesMap[countryRow[AlphaCountryColumn]] = countryRow[NameCountryColumn]
 		}
 		C.CountriesAlphaStorage.InitCountries(countriesMap)
 	}

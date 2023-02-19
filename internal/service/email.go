@@ -80,10 +80,23 @@ func (e EmailService) checkEmail(value []string) bool {
 }
 
 // GetResultEmailData get result email data systems
-func (e EmailService) GetResultEmailData(path string) []domain.EmailData {
-	resultEmailData := e.emailRead(path)
-	sort.Slice(resultEmailData, func(i, j int) bool {
-		return resultEmailData[i].Country < resultEmailData[j].Country
-	})
+func (e EmailService) GetResultEmailData(path string) map[string][][]domain.EmailData {
+	resultEmailData := make(map[string][][]domain.EmailData)
+	countriesMap := make(map[string][]domain.EmailData)
+	emailData := e.emailRead(path)
+	for _, value := range emailData {
+		countriesMap[value.Country] = append(countriesMap[value.Country], value)
+	}
+	for key, value := range countriesMap {
+		fastProviders := make([]domain.EmailData, len(value))
+		slowProviders := make([]domain.EmailData, len(value))
+		copy(fastProviders, value)
+		copy(slowProviders, value)
+		sort.Sort(domain.EmailByDeliveryAscending{fastProviders})
+		sort.Sort(domain.EmailByDeliveryDescending{slowProviders})
+		keyAlpha := e.CountriesAlphaStorage.GetAlphaFromNameCountry(key)
+		resultEmailData[keyAlpha] = append(resultEmailData[keyAlpha], slowProviders[:3])
+		resultEmailData[keyAlpha] = append(resultEmailData[keyAlpha], fastProviders[:3])
+	}
 	return resultEmailData
 }

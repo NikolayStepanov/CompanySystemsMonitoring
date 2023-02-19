@@ -8,13 +8,13 @@ import (
 type SMS interface {
 	smsRead(path string) []domain.SMSData
 	checkSMS(value []string) bool
-	GetResultSMSData(path string) []domain.SMSData
+	GetResultSMSData(path string) [][]domain.SMSData
 }
 
 type MMS interface {
 	mmsRequest() []domain.MMSData
 	checkMMS(value domain.MMSData) bool
-	GetResultMMSData() []domain.MMSData
+	GetResultMMSData() [][]domain.MMSData
 }
 
 type VoiceCall interface {
@@ -26,7 +26,7 @@ type VoiceCall interface {
 type Email interface {
 	emailRead(path string) []domain.EmailData
 	checkEmail(value []string) bool
-	GetResultEmailData(path string) []domain.EmailData
+	GetResultEmailData(path string) map[string][][]domain.EmailData
 }
 
 type Billing interface {
@@ -35,7 +35,7 @@ type Billing interface {
 
 type Support interface {
 	supportRequest() []domain.SupportData
-	GetResultSupportData() []domain.SupportData
+	GetResultSupportData() []int
 }
 
 type Incident interface {
