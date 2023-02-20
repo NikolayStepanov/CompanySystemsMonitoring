@@ -12,9 +12,9 @@ type SMS interface {
 }
 
 type MMS interface {
-	mmsRequest() []domain.MMSData
+	mmsRequest() ([]domain.MMSData, error)
 	checkMMS(value domain.MMSData) bool
-	GetResultMMSData() [][]domain.MMSData
+	GetResultMMSData() ([][]domain.MMSData, error)
 }
 
 type VoiceCall interface {
@@ -34,13 +34,13 @@ type Billing interface {
 }
 
 type Support interface {
-	supportRequest() []domain.SupportData
-	GetResultSupportData() []int
+	supportRequest() ([]domain.SupportData, error)
+	GetResultSupportData() ([]int, error)
 }
 
 type Incident interface {
-	incidentRequest() []domain.IncidentData
-	GetResultIncidentData() []domain.IncidentData
+	incidentRequest() ([]domain.IncidentData, error)
+	GetResultIncidentData() ([]domain.IncidentData, error)
 }
 type Services struct {
 	SMS       SMS

@@ -22,16 +22,16 @@ func NewMMSService(countriesAlphaStorage storages.CountriesAlphaStorager) *MMSSe
 }
 
 // mmsRequest request for mms data
-func (M MMSService) mmsRequest() []domain.MMSData {
+func (M MMSService) mmsRequest() ([]domain.MMSData, error) {
 	err := error(nil)
 	mmsDataResult := []domain.MMSData{}
 
 	resp, err := http.Get(common.UrlMMSSystem)
+	defer resp.Body.Close()
 	if err != nil {
 		log.Println("mmsRequest:", err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusOK {
+		err = fmt.Errorf("mmsRequest error:%w", err)
+	} else if resp.StatusCode == http.StatusOK {
 		bodyResp := []byte{}
 		if bodyResp, err = ioutil.ReadAll(resp.Body); err != nil {
 			log.Println(err)
@@ -48,8 +48,10 @@ func (M MMSService) mmsRequest() []domain.MMSData {
 			}
 			mmsDataResult = mmsDataResult[:index]
 		}
+	} else {
+		err = fmt.Errorf("mmsRequest error: stausCode = %d", resp.StatusCode)
 	}
-	return mmsDataResult
+	return mmsDataResult, err
 }
 
 // checkMMS validation mms data
@@ -85,16 +87,20 @@ func (M MMSService) checkMMS(value domain.MMSData) bool {
 }
 
 // GetResultMMSData get result mms data systems
-func (M MMSService) GetResultMMSData() [][]domain.MMSData {
+func (M MMSService) GetResultMMSData() ([][]domain.MMSData, error) {
 	resultMMSData := [][]domain.MMSData{}
-	mmsData := M.mmsRequest()
-	mmsDataSortedByProvider := make([]domain.MMSData, len(mmsData))
-	mmsDataSortedByCountry := make([]domain.MMSData, len(mmsData))
-	copy(mmsDataSortedByProvider, mmsData)
-	copy(mmsDataSortedByCountry, mmsData)
-	sort.Sort(domain.MMSByProvider{mmsDataSortedByProvider})
-	sort.Sort(domain.MMSByCountry{mmsDataSortedByCountry})
-	resultMMSData = append(resultMMSData, mmsDataSortedByProvider)
-	resultMMSData = append(resultMMSData, mmsDataSortedByCountry)
-	return resultMMSData
+	mmsData, err := M.mmsRequest()
+	if err != nil {
+		err = fmt.Errorf("GetResultMMSData error:%w", err)
+	} else {
+		mmsDataSortedByProvider := make([]domain.MMSData, len(mmsData))
+		mmsDataSortedByCountry := make([]domain.MMSData, len(mmsData))
+		copy(mmsDataSortedByProvider, mmsData)
+		copy(mmsDataSortedByCountry, mmsData)
+		sort.Sort(domain.MMSByProvider{mmsDataSortedByProvider})
+		sort.Sort(domain.MMSByCountry{mmsDataSortedByCountry})
+		resultMMSData = append(resultMMSData, mmsDataSortedByProvider)
+		resultMMSData = append(resultMMSData, mmsDataSortedByCountry)
+	}
+	return resultMMSData, err
 }

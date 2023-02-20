@@ -4,6 +4,7 @@ import (
 	"CompanySystemsMonitoring/internal/domain"
 	"CompanySystemsMonitoring/internal/domain/common"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -26,48 +27,54 @@ type SupportService struct {
 }
 
 // supportRequest request for support data
-func (s SupportService) supportRequest() []domain.SupportData {
+func (s SupportService) supportRequest() ([]domain.SupportData, error) {
 	err := error(nil)
 	supportDataResult := []domain.SupportData{}
 
 	resp, err := http.Get(common.UrlSupportSystem)
+	defer resp.Body.Close()
 	if err != nil {
 		log.Println("supportRequest:", err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusOK {
+		err = fmt.Errorf("supportRequest error:%w", err)
+	} else if resp.StatusCode == http.StatusOK {
 		bodyResp := []byte{}
 		if bodyResp, err = ioutil.ReadAll(resp.Body); err != nil {
 			log.Println(err)
 		} else if err = json.Unmarshal(bodyResp, &supportDataResult); err != nil {
 			log.Println(err)
 		}
+	} else {
+		err = fmt.Errorf("supportRequest error: stausCode = %d", resp.StatusCode)
 	}
-	return supportDataResult
+	return supportDataResult, err
 }
 
 // GetResultSupportData get result support data systems
-func (s SupportService) GetResultSupportData() []int {
-	result := make([]int, 0)
+func (s SupportService) GetResultSupportData() ([]int, error) {
+	result := []int{}
 	totalTicket := 0
 	averageTime := 0
 	load := 0
-	supportData := s.supportRequest()
-	for _, value := range supportData {
-		totalTicket += value.ActiveTickets
-	}
-	if totalTicket < notLoadBorder {
-		load = notLoad
-	} else if totalTicket <= averageLoadBorder {
-		load = averageLoad
+	supportData, err := s.supportRequest()
+	if err != nil {
+		err = fmt.Errorf("GetResultSupportData error:%w", err)
 	} else {
-		load = overLoad
+		for _, value := range supportData {
+			totalTicket += value.ActiveTickets
+		}
+		if totalTicket < notLoadBorder {
+			load = notLoad
+		} else if totalTicket <= averageLoadBorder {
+			load = averageLoad
+		} else {
+			load = overLoad
+		}
+		timeToRequest := float64(sixtyMinutes) / float64(speedTickitHour)
+		averageTime = int(float64(totalTicket) * timeToRequest)
+		result = append(result, load)
+		result = append(result, averageTime)
 	}
-	timeToRequest := float64(sixtyMinutes) / float64(speedTickitHour)
-	averageTime = int(float64(totalTicket) * timeToRequest)
-	result = append(result, load)
-	result = append(result, averageTime)
-	return result
+	return result, err
 }
 
 func NewSupportService() *SupportService {
