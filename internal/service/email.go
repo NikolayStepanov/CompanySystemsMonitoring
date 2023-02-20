@@ -47,7 +47,7 @@ func (e EmailService) emailRead(path string) []domain.EmailData {
 			if e.checkEmail(lineSplit) {
 				deliveryTime, _ := strconv.Atoi(lineSplit[EmailDeliveryTimeColumn])
 				emailData := domain.EmailData{
-					Country:      e.CountriesAlphaStorage.GetNameCountryFromAlpha(lineSplit[AlphaColumn]),
+					Country:      lineSplit[AlphaColumn],
 					Provider:     lineSplit[EmailProviderColumn],
 					DeliveryTime: deliveryTime,
 				}
