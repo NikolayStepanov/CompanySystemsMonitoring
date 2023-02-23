@@ -24,8 +24,9 @@ func Run() {
 	countryAlphaStorage := storages.CountriesAlphaStorage{}
 	filesStorage := files_storage.NewFileStorage(&countryAlphaStorage, alphaCSV)
 	filesStorage.LoadingCountries()
+	resultStorage := storages.NewResultDataStorage()
 	services := service.NewServices(&countryAlphaStorage)
-	result := service.NewResultService(services)
+	result := service.NewResultService(services, resultStorage)
 	log.Println(result.GetResultData())
 	handlers := httpDelivery.NewHandler(result)
 	//HTTP Server
