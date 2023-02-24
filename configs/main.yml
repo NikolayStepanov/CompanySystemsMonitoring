@@ -1,0 +1,24 @@
+http:
+  host: 172.16.238.11
+  port: 8080
+  maxHeaderBytes: 1
+  readTimeout: 10s
+  writeTimeout: 10s
+filesStorageApp:
+  rootPath: data_app/
+  alphaFile: alpha-2.csv
+serverAPI:
+  address: http://172.16.238.10
+  port: 8383
+  urlMMSSystem: /mms
+  urlSupportSystem: /support
+  urlIncidentSystem: /accendent
+filesStorageAPI:
+  rootPath: simulator/data/
+  smsFile: sms.data
+  voiceFile: voice.data
+  emailFile: email.data
+  billingFile: billing.data
+
+
+

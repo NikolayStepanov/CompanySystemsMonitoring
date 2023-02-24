@@ -6,8 +6,8 @@ import (
 )
 
 type ResultDataStorage struct {
-	Storage domain.ResultSetT
 	sync.Mutex
+	Storage domain.ResultSetT
 }
 
 type ResultStorager interface {

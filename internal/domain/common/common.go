@@ -7,14 +7,16 @@ var (
 		"MSN": "MSN", "Orange": "Orange", "Comcast": "Comcast", "AOL": "AOL", "Live": "Live", "RediffMail": "RediffMail",
 		"GMX": "GMX", "Protonmail": "Protonmail", "Yandex": "Yandex", "Mail.ru": "Mail.ru"}
 )
-
-const (
-	MinBandwidth      = 0
-	MaxBandwidth      = 100
+var (
 	UrlApi            = "http://172.16.238.10:8383"
 	UrlMMSSystem      = UrlApi + "/mms"
 	UrlSupportSystem  = UrlApi + "/support"
 	UrlIncidentSystem = UrlApi + "/accendent"
+)
+
+const (
+	MinBandwidth = 0
+	MaxBandwidth = 100
 )
 
 const (

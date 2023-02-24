@@ -1,6 +1,7 @@
 package service
 
 import (
+	"CompanySystemsMonitoring/internal/config"
 	"CompanySystemsMonitoring/internal/domain"
 	"CompanySystemsMonitoring/internal/repository/storages"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 const storageUpdateTimeSec = 30
 
 type ResultService struct {
+	cfg           *config.Config
 	Time          time.Time
 	services      *Services
 	resultStorage storages.ResultStorager
@@ -22,30 +24,32 @@ type Result interface {
 	GetResultData() domain.ResultT
 }
 
-func NewResultService(services *Services, resultStorage storages.ResultStorager) *ResultService {
-	return &ResultService{time.Now().Add(-storageUpdateTimeSec * time.Second), services, resultStorage}
+func NewResultService(cfg *config.Config, services *Services, resultStorage storages.ResultStorager) *ResultService {
+	return &ResultService{cfg, time.Now().Add(-storageUpdateTimeSec * time.Second), services, resultStorage}
 }
 
 func (r *ResultService) getResultSetData() (domain.ResultSetT, error) {
 	err := error(nil)
 	resultSetData := domain.ResultSetT{}
 	var (
-		wg          sync.WaitGroup
-		errMMS      error
-		errSupport  error
-		errIncident error
-		sms         [][]domain.SMSData
-		mms         [][]domain.MMSData
-		voiceCall   []domain.VoiceCallData
-		email       map[string][][]domain.EmailData
-		billing     domain.BillingData
-		support     []int
-		incidents   []domain.IncidentData
+		wg                 sync.WaitGroup
+		errMMS             error
+		errSupport         error
+		errIncident        error
+		sms                [][]domain.SMSData
+		mms                [][]domain.MMSData
+		voiceCall          []domain.VoiceCallData
+		email              map[string][][]domain.EmailData
+		billing            domain.BillingData
+		support            []int
+		incidents          []domain.IncidentData
+		rootPathStorageAPI string
 	)
+	rootPathStorageAPI = r.cfg.FilesStorageAPI.RootPath
 	wg.Add(7)
 	go func() {
 		defer wg.Done()
-		sms = r.services.SMS.GetResultSMSData("simulator/data/sms.data")
+		sms = r.services.SMS.GetResultSMSData(rootPathStorageAPI + r.cfg.FilesStorageAPI.SmsFile)
 	}()
 	go func() {
 		defer wg.Done()
@@ -53,15 +57,15 @@ func (r *ResultService) getResultSetData() (domain.ResultSetT, error) {
 	}()
 	go func() {
 		defer wg.Done()
-		voiceCall = r.services.VoiceCall.GetResultVoiceCallData("simulator/data/voice.data")
+		voiceCall = r.services.VoiceCall.GetResultVoiceCallData(rootPathStorageAPI + r.cfg.FilesStorageAPI.VoiceFile)
 	}()
 	go func() {
 		defer wg.Done()
-		email = r.services.Email.GetResultEmailData("simulator/data/email.data")
+		email = r.services.Email.GetResultEmailData(rootPathStorageAPI + r.cfg.FilesStorageAPI.EmailFile)
 	}()
 	go func() {
 		defer wg.Done()
-		billing = r.services.Billing.BillingRead("simulator/data/billing.data")
+		billing = r.services.Billing.BillingRead(rootPathStorageAPI + r.cfg.FilesStorageAPI.BillingFile)
 	}()
 	go func() {
 		defer wg.Done()
