@@ -1,22 +1,23 @@
 package server
 
 import (
+	"CompanySystemsMonitoring/internal/config"
 	"context"
 	"net/http"
-	"time"
 )
 
 type Server struct {
 	httpServer *http.Server
 }
 
-func NewServer(handler http.Handler) *Server {
+func NewServer(cfg *config.Config, handler http.Handler) *Server {
 	return &Server{
 		httpServer: &http.Server{
-			Addr:         "172.16.238.11:8080",
-			Handler:      handler,
-			ReadTimeout:  10 * time.Second,
-			WriteTimeout: 10 * time.Second,
+			Addr:           cfg.HTTP.Host + ":" + cfg.HTTP.Port,
+			Handler:        handler,
+			ReadTimeout:    cfg.HTTP.ReadTimeout,
+			WriteTimeout:   cfg.HTTP.WriteTimeout,
+			MaxHeaderBytes: cfg.HTTP.MaxHeaderMegabytes << 20,
 		},
 	}
 }
