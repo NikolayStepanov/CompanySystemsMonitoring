@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  simulator:
+    container_name: simulator
+    restart: always
+    build: ./simulator
+    networks:
+      sim:
+        ipv4_address: 172.16.238.10
+    ports:
+      - "127.0.0.1:8383:8383"
+    volumes:
+      - simulator-data:/simulator/data
+  monitoring:
+    container_name: monitoring
+    restart: always
+    build: ./
+    networks:
+      sim:
+        ipv4_address: 172.16.238.11
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      - simulator
+    volumes:
+      - type: volume
+        source: simulator-data
+        target: /app/simulator/data
+volumes:
+  simulator-data:
+networks:
+  sim:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
