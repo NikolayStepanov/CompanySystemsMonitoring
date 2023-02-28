@@ -5,6 +5,7 @@ import (
 	. "CompanySystemsMonitoring/internal/domain/common"
 	"CompanySystemsMonitoring/internal/repository/storages"
 	"fmt"
+	"golang.org/x/net/context"
 	"io/ioutil"
 	"log"
 	"os"
@@ -86,16 +87,21 @@ func (S SMSService) checkSMS(valueLine []string) bool {
 }
 
 // GetResultSMSData get result sms data systems
-func (S SMSService) GetResultSMSData(path string) [][]domain.SMSData {
+func (S SMSService) GetResultSMSData(ctx context.Context, path string) [][]domain.SMSData {
 	resultSMSData := [][]domain.SMSData{}
-	smsData := S.smsRead(path)
-	smsDataSortedByProvider := make([]domain.SMSData, len(smsData))
-	smsDataSortedByCountry := make([]domain.SMSData, len(smsData))
-	copy(smsDataSortedByProvider, smsData)
-	copy(smsDataSortedByCountry, smsData)
-	sort.Sort(domain.SMSByProvider{smsDataSortedByProvider})
-	sort.Sort(domain.SMSByCountry{smsDataSortedByCountry})
-	resultSMSData = append(resultSMSData, smsDataSortedByProvider)
-	resultSMSData = append(resultSMSData, smsDataSortedByCountry)
+	select {
+	case <-ctx.Done():
+		log.Printf("cansel: GetResultSMSData")
+	default:
+		smsData := S.smsRead(path)
+		smsDataSortedByProvider := make([]domain.SMSData, len(smsData))
+		smsDataSortedByCountry := make([]domain.SMSData, len(smsData))
+		copy(smsDataSortedByProvider, smsData)
+		copy(smsDataSortedByCountry, smsData)
+		sort.Sort(domain.SMSByProvider{smsDataSortedByProvider})
+		sort.Sort(domain.SMSByCountry{smsDataSortedByCountry})
+		resultSMSData = append(resultSMSData, smsDataSortedByProvider)
+		resultSMSData = append(resultSMSData, smsDataSortedByCountry)
+	}
 	return resultSMSData
 }

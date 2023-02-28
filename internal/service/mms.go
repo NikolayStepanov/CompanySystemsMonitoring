@@ -6,6 +6,7 @@ import (
 	"CompanySystemsMonitoring/internal/repository/storages"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/net/context"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -87,20 +88,28 @@ func (M MMSService) checkMMS(value domain.MMSData) bool {
 }
 
 // GetResultMMSData get result mms data systems
-func (M MMSService) GetResultMMSData() ([][]domain.MMSData, error) {
+func (M MMSService) GetResultMMSData(ctx context.Context) ([][]domain.MMSData, error) {
+	err := error(nil)
 	resultMMSData := [][]domain.MMSData{}
-	mmsData, err := M.mmsRequest()
-	if err != nil {
-		err = fmt.Errorf("GetResultMMSData error:%w", err)
-	} else {
-		mmsDataSortedByProvider := make([]domain.MMSData, len(mmsData))
-		mmsDataSortedByCountry := make([]domain.MMSData, len(mmsData))
-		copy(mmsDataSortedByProvider, mmsData)
-		copy(mmsDataSortedByCountry, mmsData)
-		sort.Sort(domain.MMSByProvider{mmsDataSortedByProvider})
-		sort.Sort(domain.MMSByCountry{mmsDataSortedByCountry})
-		resultMMSData = append(resultMMSData, mmsDataSortedByProvider)
-		resultMMSData = append(resultMMSData, mmsDataSortedByCountry)
+	select {
+	case <-ctx.Done():
+		log.Println("cansel: GetResultMMSData")
+		err = fmt.Errorf("mms data not received")
+	default:
+		mmsData := []domain.MMSData{}
+		mmsData, err = M.mmsRequest()
+		if err != nil {
+			err = fmt.Errorf("GetResultMMSData error:%w", err)
+		} else {
+			mmsDataSortedByProvider := make([]domain.MMSData, len(mmsData))
+			mmsDataSortedByCountry := make([]domain.MMSData, len(mmsData))
+			copy(mmsDataSortedByProvider, mmsData)
+			copy(mmsDataSortedByCountry, mmsData)
+			sort.Sort(domain.MMSByProvider{mmsDataSortedByProvider})
+			sort.Sort(domain.MMSByCountry{mmsDataSortedByCountry})
+			resultMMSData = append(resultMMSData, mmsDataSortedByProvider)
+			resultMMSData = append(resultMMSData, mmsDataSortedByCountry)
+		}
 	}
 	return resultMMSData, err
 }

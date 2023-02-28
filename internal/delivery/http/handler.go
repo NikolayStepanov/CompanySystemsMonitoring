@@ -24,7 +24,7 @@ func (h *Handler) Init() *mux.Router {
 func (h *Handler) handleConnection(w http.ResponseWriter, r *http.Request) {
 	err := error(nil)
 	resultJSON := []byte{}
-	result := h.resultService.GetResultData()
+	result := h.resultService.GetResultData(r.Context())
 	if resultJSON, err = json.Marshal(result); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	} else {
