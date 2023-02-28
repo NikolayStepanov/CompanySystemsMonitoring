@@ -5,6 +5,7 @@ import (
 	. "CompanySystemsMonitoring/internal/domain/common"
 	"CompanySystemsMonitoring/internal/repository/storages"
 	"fmt"
+	"golang.org/x/net/context"
 	"io/ioutil"
 	"log"
 	"os"
@@ -114,10 +115,16 @@ func (v VoiceCallService) checkVoiceCall(valueLine []string) bool {
 }
 
 // GetResultVoiceCallData get result voice call data systems
-func (v VoiceCallService) GetResultVoiceCallData(path string) []domain.VoiceCallData {
-	resultVoiceCallData := v.voiceCallRead(path)
-	sort.Slice(resultVoiceCallData, func(i, j int) bool {
-		return resultVoiceCallData[i].Country < resultVoiceCallData[j].Country
-	})
+func (v VoiceCallService) GetResultVoiceCallData(ctx context.Context, path string) []domain.VoiceCallData {
+	resultVoiceCallData := []domain.VoiceCallData{}
+	select {
+	case <-ctx.Done():
+		log.Printf("cansel: GetResultSupportData")
+	default:
+		resultVoiceCallData = v.voiceCallRead(path)
+		sort.Slice(resultVoiceCallData, func(i, j int) bool {
+			return resultVoiceCallData[i].Country < resultVoiceCallData[j].Country
+		})
+	}
 	return resultVoiceCallData
 }

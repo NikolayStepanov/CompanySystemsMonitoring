@@ -5,6 +5,7 @@ import (
 	. "CompanySystemsMonitoring/internal/domain/common"
 	"CompanySystemsMonitoring/internal/repository/storages"
 	"fmt"
+	"golang.org/x/net/context"
 	"io/ioutil"
 	"log"
 	"os"
@@ -80,23 +81,28 @@ func (e EmailService) checkEmail(value []string) bool {
 }
 
 // GetResultEmailData get result email data systems
-func (e EmailService) GetResultEmailData(path string) map[string][][]domain.EmailData {
+func (e EmailService) GetResultEmailData(ctx context.Context, path string) map[string][][]domain.EmailData {
 	resultEmailData := make(map[string][][]domain.EmailData)
-	countriesMap := make(map[string][]domain.EmailData)
-	emailData := e.emailRead(path)
-	for _, value := range emailData {
-		countriesMap[value.Country] = append(countriesMap[value.Country], value)
-	}
-	for key, value := range countriesMap {
-		fastProviders := make([]domain.EmailData, len(value))
-		slowProviders := make([]domain.EmailData, len(value))
-		copy(fastProviders, value)
-		copy(slowProviders, value)
-		sort.Sort(domain.EmailByDeliveryAscending{fastProviders})
-		sort.Sort(domain.EmailByDeliveryDescending{slowProviders})
-		keyAlpha := e.CountriesAlphaStorage.GetAlphaFromNameCountry(key)
-		resultEmailData[keyAlpha] = append(resultEmailData[keyAlpha], slowProviders[:3])
-		resultEmailData[keyAlpha] = append(resultEmailData[keyAlpha], fastProviders[:3])
+	select {
+	case <-ctx.Done():
+		log.Println("cansel: GetResultEmailData")
+	default:
+		countriesMap := make(map[string][]domain.EmailData)
+		emailData := e.emailRead(path)
+		for _, value := range emailData {
+			countriesMap[value.Country] = append(countriesMap[value.Country], value)
+		}
+		for key, value := range countriesMap {
+			fastProviders := make([]domain.EmailData, len(value))
+			slowProviders := make([]domain.EmailData, len(value))
+			copy(fastProviders, value)
+			copy(slowProviders, value)
+			sort.Sort(domain.EmailByDeliveryAscending{fastProviders})
+			sort.Sort(domain.EmailByDeliveryDescending{slowProviders})
+			keyAlpha := e.CountriesAlphaStorage.GetAlphaFromNameCountry(key)
+			resultEmailData[keyAlpha] = append(resultEmailData[keyAlpha], slowProviders[:3])
+			resultEmailData[keyAlpha] = append(resultEmailData[keyAlpha], fastProviders[:3])
+		}
 	}
 	return resultEmailData
 }

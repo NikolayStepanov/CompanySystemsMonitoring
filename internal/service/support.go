@@ -5,6 +5,7 @@ import (
 	"CompanySystemsMonitoring/internal/domain/common"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/net/context"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -50,30 +51,38 @@ func (s SupportService) supportRequest() ([]domain.SupportData, error) {
 }
 
 // GetResultSupportData get result support data systems
-func (s SupportService) GetResultSupportData() ([]int, error) {
+func (s SupportService) GetResultSupportData(ctx context.Context) ([]int, error) {
+	err := error(nil)
 	result := []int{}
-	totalTicket := 0
-	averageTime := 0
-	load := 0
-	supportData, err := s.supportRequest()
-	if err != nil {
-		err = fmt.Errorf("GetResultSupportData error:%w", err)
-	} else {
-		for _, value := range supportData {
-			totalTicket += value.ActiveTickets
-		}
-		if totalTicket < notLoadBorder {
-			load = notLoad
-		} else if totalTicket <= averageLoadBorder {
-			load = averageLoad
+	select {
+	case <-ctx.Done():
+		log.Printf("cansel: GetResultSupportData")
+		err = fmt.Errorf("support data not received")
+	default:
+		totalTicket := 0
+		averageTime := 0
+		load := 0
+		supportData, err := s.supportRequest()
+		if err != nil {
+			err = fmt.Errorf("GetResultSupportData error:%w", err)
 		} else {
-			load = overLoad
+			for _, value := range supportData {
+				totalTicket += value.ActiveTickets
+			}
+			if totalTicket < notLoadBorder {
+				load = notLoad
+			} else if totalTicket <= averageLoadBorder {
+				load = averageLoad
+			} else {
+				load = overLoad
+			}
+			timeToRequest := float64(sixtyMinutes) / float64(speedTickitHour)
+			averageTime = int(float64(totalTicket) * timeToRequest)
+			result = append(result, load)
+			result = append(result, averageTime)
 		}
-		timeToRequest := float64(sixtyMinutes) / float64(speedTickitHour)
-		averageTime = int(float64(totalTicket) * timeToRequest)
-		result = append(result, load)
-		result = append(result, averageTime)
 	}
+
 	return result, err
 }
 

@@ -5,6 +5,7 @@ import (
 	"CompanySystemsMonitoring/internal/domain/common"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/net/context"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -42,8 +43,16 @@ func (i IncidentService) incidentRequest() ([]domain.IncidentData, error) {
 }
 
 // GetResultIncidentData get result incident data systems
-func (i IncidentService) GetResultIncidentData() ([]domain.IncidentData, error) {
-	resultIncidentData, err := i.incidentRequest()
-	sort.Sort(domain.IncidentByStatus{resultIncidentData})
+func (i IncidentService) GetResultIncidentData(ctx context.Context) ([]domain.IncidentData, error) {
+	err := error(nil)
+	resultIncidentData := []domain.IncidentData{}
+	select {
+	case <-ctx.Done():
+		log.Println("cansel: GetResultIncidentData")
+		err = fmt.Errorf("incident data not received")
+	default:
+		resultIncidentData, err = i.incidentRequest()
+		sort.Sort(domain.IncidentByStatus{resultIncidentData})
+	}
 	return resultIncidentData, err
 }
