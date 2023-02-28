@@ -94,19 +94,17 @@ func (r *ResultService) getResultSetData(ctx context.Context) (domain.ResultSetT
 
 func (r *ResultService) resultSMSData(ctx context.Context, wg *sync.WaitGroup) [][]domain.SMSData {
 	outResult := make(chan [][]domain.SMSData)
-	ctxWithCansel, cansel := context.WithCancel(ctx)
 	smsResult := [][]domain.SMSData{}
 	wg.Add(1)
-	go func(ctx context.Context) {
+	go func() {
 		defer wg.Done()
 		defer close(outResult)
 		smsData := r.services.SMS.GetResultSMSData(ctx, r.cfg.FilesStorageAPI.RootPath+r.cfg.FilesStorageAPI.SmsFile)
 		outResult <- smsData
-	}(ctxWithCansel)
+	}()
 	select {
 	case <-ctx.Done():
 		log.Println("Cansel: SMS Data not received")
-		cansel()
 	case smsResult = <-outResult:
 		log.Println("SMS Data received successfully")
 	}
@@ -118,14 +116,13 @@ func (r *ResultService) resultMMSData(ctx context.Context, wg *sync.WaitGroup) (
 	mmsResult := [][]domain.MMSData{}
 	errMMS := error(nil)
 	wg.Add(1)
-
-	go func(ctx context.Context) {
+	go func() {
 		defer wg.Done()
 		defer close(outResult)
 		mmsData := [][]domain.MMSData{}
 		mmsData, errMMS = r.services.MMS.GetResultMMSData(ctx)
 		outResult <- mmsData
-	}(ctx)
+	}()
 	select {
 	case <-ctx.Done():
 		log.Println("Cansel: MMS Data not received")
@@ -139,12 +136,12 @@ func (r *ResultService) resultVoiceCallData(ctx context.Context, wg *sync.WaitGr
 	outResult := make(chan []domain.VoiceCallData)
 	voiceCallResult := []domain.VoiceCallData{}
 	wg.Add(1)
-	go func(ctx context.Context) {
+	go func() {
 		defer wg.Done()
 		defer close(outResult)
 		voiceCallData := r.services.VoiceCall.GetResultVoiceCallData(ctx, r.cfg.FilesStorageAPI.RootPath+r.cfg.FilesStorageAPI.VoiceFile)
 		outResult <- voiceCallData
-	}(ctx)
+	}()
 	select {
 	case <-ctx.Done():
 		log.Println("Cansel: VoiceCall Data not received")
@@ -158,12 +155,12 @@ func (r *ResultService) resultEmailData(ctx context.Context, wg *sync.WaitGroup)
 	outResult := make(chan map[string][][]domain.EmailData)
 	emailResult := map[string][][]domain.EmailData{}
 	wg.Add(1)
-	go func(ctx context.Context) {
+	go func() {
 		defer wg.Done()
 		defer close(outResult)
 		emailData := r.services.Email.GetResultEmailData(ctx, r.cfg.FilesStorageAPI.RootPath+r.cfg.FilesStorageAPI.EmailFile)
 		outResult <- emailData
-	}(ctx)
+	}()
 	select {
 	case <-ctx.Done():
 		log.Println("Cansel: Email Data not received")
@@ -177,12 +174,12 @@ func (r *ResultService) resultBillingData(ctx context.Context, wg *sync.WaitGrou
 	outResult := make(chan domain.BillingData)
 	billingResult := domain.BillingData{}
 	wg.Add(1)
-	go func(ctx context.Context) {
+	go func() {
 		defer wg.Done()
 		defer close(outResult)
 		billingData := r.services.Billing.BillingRead(ctx, r.cfg.FilesStorageAPI.RootPath+r.cfg.FilesStorageAPI.BillingFile)
 		outResult <- billingData
-	}(ctx)
+	}()
 	select {
 	case <-ctx.Done():
 		log.Println("Cansel: Billing Data not received")
@@ -197,13 +194,13 @@ func (r *ResultService) resultSupportData(ctx context.Context, wg *sync.WaitGrou
 	supportResult := []int{}
 	errSupport := error(nil)
 	wg.Add(1)
-	go func(ctx context.Context) {
+	go func() {
 		defer wg.Done()
 		defer close(outResult)
 		supportData := []int{}
 		supportData, errSupport = r.services.Support.GetResultSupportData(ctx)
 		outResult <- supportData
-	}(ctx)
+	}()
 	select {
 	case <-ctx.Done():
 		log.Println("Cansel: Support Data not received")
@@ -218,13 +215,13 @@ func (r *ResultService) resultIncidentData(ctx context.Context, wg *sync.WaitGro
 	outResult := make(chan []domain.IncidentData)
 	incidentResult := []domain.IncidentData{}
 	wg.Add(1)
-	go func(ctx context.Context) {
+	go func() {
 		defer wg.Done()
 		defer close(outResult)
 		incidentsData := []domain.IncidentData{}
 		incidentsData, errIncident = r.services.Incident.GetResultIncidentData(ctx)
 		outResult <- incidentsData
-	}(ctx)
+	}()
 	select {
 	case <-ctx.Done():
 		log.Println("Cansel: Incident Data not received")
